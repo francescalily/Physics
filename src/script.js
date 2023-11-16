@@ -36,6 +36,16 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
+const hitSound = new Audio("/sounds/hit.mp3");
+const playHitSound = (collision) => {
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+  if (impactStrength > 1) {
+    hitSound.volume = Math.random();
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
+
 /**
  * Textures
  */
@@ -53,7 +63,8 @@ const environmentMapTexture = cubeTextureLoader.load([
 
 //creating physics world part of the scene
 const world = new CANNON.World();
-world.broadphase = new CANNON.SAPBroadphase(world); // add because better for performances
+world.broadphase = new CANNON.SAPBroadphase(world); // add because better for performances but need to add sleep phase so it only tests ones that are moving, right now it tests every element
+world.allowSleep = true;
 //adding gravity - gravity is a Vec3 (same as vector3 in three.js just named differently in CANNON)
 world.gravity.set(0, -9.82, 0);
 //have to create a body, like in three.js we create meshes. Bodies are objects that will fall and collide with other bodies
@@ -207,6 +218,7 @@ const createSphere = (radius, position) => {
     material: defaultMaterial,
   });
   body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
   world.addBody(body);
 
   objectsToUpdate.push({
@@ -243,6 +255,7 @@ const createBox = (width, height, depth, position) => {
     material: defaultMaterial,
   });
   body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
   world.addBody(body);
 
   objectsToUpdate.push({
