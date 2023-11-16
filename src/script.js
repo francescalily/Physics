@@ -37,10 +37,23 @@ const world = new CANNON.World();
 //adding gravity - gravity is a Vec3 (same as vector3 in three.js just named differently in CANNON)
 world.gravity.set(0, -9.82, 0);
 //have to create a body, like in three.js we create meshes. Bodies are objects that will fall and collide with other bodies
+
+//creating materials
+const concreteMaterial = new CANNON.Material("concrete");
+const plasticMaterial = new CANNON.Material("plastic");
+//creating the contact material next where these two materials hit each other
+const concretePlasticContactMaterial = new CANNON.ContactMaterial(
+  concreteMaterial,
+  plasticMaterial,
+  { friction: 0.1, restitution: 0.7 }
+);
+world.addContactMaterial(concretePlasticContactMaterial);
+
 const sphereShape = new CANNON.Sphere(0.5);
 const sphereBody = new CANNON.Body({
   mass: 1,
   position: new CANNON.Vec3(0, 3, 0),
+  material: plasticMaterial,
   shape: sphereShape,
 });
 world.addBody(sphereBody);
@@ -48,6 +61,7 @@ world.addBody(sphereBody);
 const floorShape = new CANNON.Plane();
 const floorBody = new CANNON.Body();
 // floorBody.mass = 0; default is 0 so no need for this line
+floorBody.material = concreteMaterial;
 floorBody.addShape(floorShape);
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
 world.addBody(floorBody);
