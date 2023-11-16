@@ -39,29 +39,36 @@ world.gravity.set(0, -9.82, 0);
 //have to create a body, like in three.js we create meshes. Bodies are objects that will fall and collide with other bodies
 
 //creating materials
-const concreteMaterial = new CANNON.Material("concrete");
-const plasticMaterial = new CANNON.Material("plastic");
+const defaultMaterial = new CANNON.Material("default");
+
 //creating the contact material next where these two materials hit each other
-const concretePlasticContactMaterial = new CANNON.ContactMaterial(
-  concreteMaterial,
-  plasticMaterial,
+const defaultContactMaterial = new CANNON.ContactMaterial(
+  defaultMaterial,
+  defaultMaterial,
   { friction: 0.1, restitution: 0.7 }
 );
-world.addContactMaterial(concretePlasticContactMaterial);
+world.addContactMaterial(defaultContactMaterial);
+
+world.defaultContactMaterial = defaultContactMaterial;
 
 const sphereShape = new CANNON.Sphere(0.5);
 const sphereBody = new CANNON.Body({
   mass: 1,
   position: new CANNON.Vec3(0, 3, 0),
-  material: plasticMaterial,
+  //   material: defaultMaterial,
   shape: sphereShape,
 });
+//adding force
+sphereBody.applyLocalForce(
+  new CANNON.Vec3(150, 0, 0),
+  new CANNON.Vec3(0, 0, 0)
+);
 world.addBody(sphereBody);
 
 const floorShape = new CANNON.Plane();
 const floorBody = new CANNON.Body();
 // floorBody.mass = 0; default is 0 so no need for this line
-floorBody.material = concreteMaterial;
+// floorBody.material = defaultMaterial;
 floorBody.addShape(floorShape);
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
 world.addBody(floorBody);
@@ -176,6 +183,8 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - oldElapsedTime;
   oldElapsedTime = elapsedTime;
+
+  sphereBody.applyForce(new CANNON.Vec3(-0.5, 0, 0), sphereBody.position);
 
   //update physics world
   //   world.step(fixed timeStamp, how much time passed since last step, how many iterations the wolrd can apply to catch up with the potential delay)
