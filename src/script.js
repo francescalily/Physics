@@ -171,19 +171,19 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 //creating array that will hold all the objects that need updating
 const objectsToUpdate = [];
+const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+const sphereMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture,
+});
 
 //creating function that makes multiple spheres
 
 const createSphere = (radius, position) => {
   //three.js mesh first
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(radius, 20, 20),
-    new THREE.MeshStandardMaterial({
-      metalness: 0.3,
-      roughness: 0.4,
-      envMap: environmentMapTexture,
-    })
-  );
+  const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  mesh.scale.set(radius, radius, radius);
   mesh.castShadow = true;
   mesh.position.copy(position);
   scene.add(mesh);
