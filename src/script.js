@@ -7,6 +7,16 @@ import CANNON from "cannon";
  * Debug
  */
 const gui = new GUI();
+//all things in debug need to be an object
+const debugObject = {};
+debugObject.createSphere = () => {
+  createSphere(Math.random() * 0.5, {
+    x: (Math.random() - 0.5) * 5,
+    y: 3,
+    z: (Math.random() - 0.5) * 5,
+  });
+};
+gui.add(debugObject, "createSphere");
 
 /**
  * Base
@@ -195,7 +205,8 @@ const createSphere = (radius, position) => {
   });
 };
 
-createSphere(0.5, { x: 0, y: 3, z: 0 });
+createSphere(0.5, { x: 0, y: 2, z: 0 });
+createSphere(0.7, { x: 2, y: 3, z: 2 });
 
 /**
  * Animate
@@ -214,6 +225,10 @@ const tick = () => {
   //   world.step(fixed timeStamp, how much time passed since last step, how many iterations the wolrd can apply to catch up with the potential delay)
   //(1/60 because 60 framerate, )
   world.step(1 / 60, deltaTime, 3);
+
+  for (const object of objectsToUpdate) {
+    object.mesh.position.copy(object.body.position);
+  }
   //   sphere.position.copy(sphereBody.position); //this one line of code is the same as the code below just written shorter
   //   sphere.position.x = sphereBody.position.x;
   //   sphere.position.y = sphereBody.position.y;
