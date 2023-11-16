@@ -53,6 +53,7 @@ const environmentMapTexture = cubeTextureLoader.load([
 
 //creating physics world part of the scene
 const world = new CANNON.World();
+world.broadphase = new CANNON.SAPBroadphase(world); // add because better for performances
 //adding gravity - gravity is a Vec3 (same as vector3 in three.js just named differently in CANNON)
 world.gravity.set(0, -9.82, 0);
 //have to create a body, like in three.js we create meshes. Bodies are objects that will fall and collide with other bodies
@@ -272,6 +273,7 @@ const tick = () => {
 
   for (const object of objectsToUpdate) {
     object.mesh.position.copy(object.body.position);
+    object.mesh.quaternion.copy(object.body.quaternion);
   }
   //   sphere.position.copy(sphereBody.position); //this one line of code is the same as the code below just written shorter
   //   sphere.position.x = sphereBody.position.x;
